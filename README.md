@@ -17,7 +17,7 @@ To run DomCycle:
 
 `$ cd DomCycle`
 
-`$ python DomCycle.py -g `*`FASTG_PATH`*` -1 `*`R1.sam`*` -2 `*`R2.sam`*` -k `*`kmer_size`*``
+`$ python DomCycle.py -g *`FASTG_PATH*` -1 *`R1.sam*` -2 *`R2.sam*` -k *`kmer_size*``
 
 Other configurable parameters:
 
