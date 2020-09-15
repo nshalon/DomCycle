@@ -4,7 +4,7 @@ DomCycle is a tool for *de novo* recognition of circular mobile genetic elements
 
 To access this pipeline:
 
-`$ git clone https://github.com/nshalon/cycle-ator.git`
+`$ git clone https://github.com/nshalon/DomCycle.git`
 
 DomCycle requires the following inputs:
 
