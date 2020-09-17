@@ -21,7 +21,7 @@ To run DomCycle:
 
 To run an example:
 
-`$ python DomCycle.py -g ex/k77.fastg -1 ex/R1_map.sam -2 ex/R2_map.sam -k 77
+`$ python DomCycle.py -g ex/k77.fastg -1 ex/R1_map.sam -2 ex/R2_map.sam -k 77`
 
 Other configurable parameters:
 
