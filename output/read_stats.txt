@@ -1,0 +1,2 @@
+read_length	k	med_insert	max_distance
+150	77	500.0	963.0

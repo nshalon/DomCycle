@@ -19,6 +19,10 @@ To run DomCycle:
 
 `$ python DomCycle.py -g `*`FASTG_PATH`*` -1 `*`R1.sam`*` -2 `*`R2.sam`*` -k `*`kmer_size`*
 
+To run an example:
+
+`$ python DomCycle.py -g ex/k77.fastg -1 ex/R1_map.sam -2 ex/R2_map.sam -k 77
+
 Other configurable parameters:
 
 - -r: average read length in library [DEFAULT: 150]

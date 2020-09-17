@@ -24,10 +24,11 @@ def run_steps():
 
     args = parser.parse_args()
 
-    script_dir = pathlib.Path(__file__).parent.absolute()
+    script_dir = str(pathlib.Path(__file__).parent.absolute())
     steps = parse_steps(args.steps)
     odir = args.outdir
     py_dir = os.path.join(script_dir, "py")
+    print("PYDIR", py_dir)
     pl_dir = os.path.join(script_dir, "pl")
 
     if not os.path.exists(odir):
@@ -115,12 +116,14 @@ def run_steps():
     if 10 in steps:
         if not os.path.exists(os.path.join(odir, "dominant_cycles")):
             os.mkdir(os.path.join(odir, "dominant_cycles"))
-        print("\n\nIdentifying Dominant Cycles...")
+        print("\n\nIdentifying dominant cycles...\n")
         subprocess.call(["python", "extract_p.py", os.path.join(odir, "cycle_cov_summary"),
                          os.path.join(odir, "cycles.fasta"), os.path.join(odir, "cycle_contig_table"),
                          str(args.maxpval), "0", "0", str(args.minscore), os.path.join(odir, "cycle_stats"), os.path.join(odir, "dominant_cycles", "cycle_stats"),
                          os.path.join(odir, "dominant_cycles", "cycles.fasta"), os.path.join(odir, "dominant_cycles", "cycle_contig_table")],
                          cwd=py_dir)
+
+        print(len(open(os.path.join(odir, "dominant_cycles", "cycle_stats")).readlines()) -1, "dominant cycles found!")
 
 def parse_steps(steps):
     if "-" in steps: # sequential list of steps
