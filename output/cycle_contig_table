@@ -1,0 +1,3 @@
+cycle	original_contig	FASTG_edge	renamed_contig	contig_len	cum_sum	orientation	cycle_length	contig_index
+CYC1	C1	True	C1	50027	1	+	49950	1
+CYC2	C2	True	C2	25027	1	+	24950	1

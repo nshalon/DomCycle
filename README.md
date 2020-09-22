@@ -45,3 +45,4 @@ Read Trim Length: 50bp
 Python dependencies:
 - numpy
 - argparse
+- pathlib
