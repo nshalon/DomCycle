@@ -1,9 +1,0 @@
-parent	child	coverage	length	weight	graph_edge
-C1a+	C1a-	33.928	200	5.89484	True
-C1a-	C1a+	49.94	50027	1001.74209	True
-C1b+	C1b-	33.928	200	5.89484	True
-C1b-	C1b+	49.94	50027	1001.74209	True
-C2a+	C2a-	16.618	200	12.03514	True
-C2a-	C2a+	24.98	25027	1001.88151	True
-C2b+	C2b-	16.618	200	12.03514	True
-C2b-	C2b+	24.98	25027	1001.88151	True
