@@ -17,11 +17,11 @@ To run DomCycle:
 
 `$ cd DomCycle`
 
-`$ python DomCycle.py -g `*`FASTG_PATH`*` -1 `*`R1.sam`*` -2 `*`R2.sam`*` -k `*`kmer_size`*
+`$ python3 DomCycle.py -g `*`FASTG_PATH`*` -1 `*`R1.sam`*` -2 `*`R2.sam`*` -k `*`kmer_size`*
 
 To run an example:
 
-`$ python DomCycle.py -g ex/k77.fastg -1 ex/R1_map.sam -2 ex/R2_map.sam -k 77`
+`$ python3 DomCycle.py -g ex/k77.fastg -1 ex/R1_map.sam -2 ex/R2_map.sam -k 77`
 
 Other configurable parameters:
 
@@ -43,6 +43,28 @@ Python v3.5.1
 Read Trim Length: 50bp
 
 Python dependencies:
+- (python version 3.x)
 - numpy
 - argparse
 - pathlib
+- scipy
+
+Main output files and main column descriptions:
+1. cycle_contig_table: a table where each row represents one contig in a dominant cycle. Each dominant cycle will have an ordered list of contigs that compose it, where two successive contigs in the table belonging to the same cycle have an edge between them and there's an additional edge between the last contig belonging to the cycle and the first contig belonging to the cycle in the table.
+    - cycle: the dominant cycle containing the contig
+    - FASTG_edge: whether the edge originated from the FASTG
+    - cum_sum: the contig's start position in the cycle sequence space
+    - orientation: denotes the relative orientation of the two contigs composing the cycle edge. (+) indicates that the two contigs are connected via the same reference strand and (-) indicates that they're connected via opposite reference strands
+    - contig_index: indicates the contig is the ith contig in the cycle
+2. cycle_stats: displays the prominent cycle coverage statistics that follow the manuscript's methods.
+    - bottleneck: the minimum support x-coverage across all of the cycle bases
+    - median_support: the cycle's median support x-coverage
+    - avg external: the sum of avg_inter and avg_intra-nonsupport 
+    - avg_inter: for each cycle strand, the total number of reads where one side maps to the cycle and the other side maps elsewhere, then averaged over both cycle strands
+    - avg_intra-nonsupport: for each cycle strand, total number of reads where both sides map to the same cycle either far away from each other or to the same cycle strand, then averaged over both cycle strands
+    - avg_singleton: the total number of reads where one side maps to the cycle and the other side doesn't map anywhere after filtering out reads according to the mapping quality thresholds set
+    - pval: given a null hypothesis of bottleneck = avg_external, the p-value associated with the associated statistics under D ~ binomial(n = # reads in sample, p = (avg_external) / (# reads in sample))
+    - score: the bottleneck / avg_external
+    - lower_bound_cov: the bottleneck - avg_external
+3. cycle_cov_long: basepair resolution of coverage statistics for each cycle, where each row in the table represents a base in the cycle and the coverages follow the above definitions (but displayed separately for either cycle strand)
+4. cycles.fasta: a .fasta file of the dominant cycles after combining the contigs that compose each cycle

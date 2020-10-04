@@ -1,10 +1,5 @@
 import argparse
 import util
-import numpy as np
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-
 
 ###############################################################################################
 # Purpose: input adjacency list, paired mapped reads, kmer size, contig table and             #
