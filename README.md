@@ -68,3 +68,5 @@ Main output files and main column descriptions:
     - lower_bound_cov: the bottleneck - avg_external
 3. cycle_cov_long: basepair resolution of coverage statistics for each cycle, where each row in the table represents a base in the cycle and the coverages follow the above definitions (but displayed separately for either cycle strand)
 4. cycles.fasta: a .fasta file of the dominant cycles after combining the contigs that compose each cycle
+
+Other files produced from mapping, graph building, cycle identification (dominant and otherwise) can be found in the "raw" subdirectory under the specified output directory.
