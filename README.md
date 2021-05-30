@@ -10,10 +10,14 @@ Python 3.x, perl, and bash are required to run DomCycle. Please see requirements
 
 DomCycle was tested with the following tools and specifications:
 
-Assembly: MEGAHIT v1.1.3\n
-Mapping: BWA V0.7.12\n
-Python v3.5.1\n
-Read Trim Length: 50bp\n
+Assembly: MEGAHIT v1.1.3
+
+Mapping: BWA V0.7.12
+
+Python v3.5.1
+
+Read Trim Length: 50bp
+
 Assembly k: 77
 
 Python dependencies:
