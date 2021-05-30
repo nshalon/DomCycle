@@ -4,8 +4,7 @@ import subprocess
 import datetime
 import pathlib
 
-
-def run_steps():
+def run_steps() -> None:
     parser = argparse.ArgumentParser(description='Run DomCycle')
     parser.add_argument('-g', "--graph", type=str, help='Path to FASTG file created from assembly')
     parser.add_argument('-1', "--r1", metavar='R1 MAPPED TO ASSEMBLY', type=str, help='R1 mapped to assembly in .sam format using BWA output')
@@ -20,7 +19,7 @@ def run_steps():
     parser.add_argument('--min_quality', metavar='MIN QUALITY THRESHOLD', type=int, help='min map quality threshold', default=0)
     parser.add_argument('--min_match_len', metavar='MIN MATCH READ LENGTH', type=int, help='minimum match read length for filtering mapped reads', default=50)
     parser.add_argument('--max_edit_distance', metavar='MAX MISMATCH', type=int, help='maximum mismatches tolerated for filtering mapped reads', default=1)
-    parser.add_argument('--steps', metavar='STEPS TO RUN', type=str, help='maximum mismatches tolerated for filtering mapped reads', default="1-11")
+    parser.add_argument('--steps', metavar='STEPS TO RUN', type=str, help='maximum mismatches tolerated for filtering mapped reads', default="1-13")
 
     args = parser.parse_args()
 
@@ -35,6 +34,11 @@ def run_steps():
     else:
         print("WARNING!\nOutput directory already exists - consider changing the directory to avoid overwriting any previous results.")
 
+    if not os.path.exists(os.path.join(odir, "dominant_cycles_pre")):
+        os.mkdir(os.path.join(odir, "dominant_cycles_pre"))
+    if not os.path.exists(os.path.join(odir, "dominant_cycles")):
+        os.mkdir(os.path.join(odir, "dominant_cycles"))
+
     if args.outdir[0] != "/":
         args.outdir = os.path.join(os.getcwd(), args.outdir)
     if args.graph[0] != "/":
@@ -44,92 +48,62 @@ def run_steps():
     if args.r2[0] != "/":
         args.r2 = os.path.join(os.getcwd(), args.r2)
 
-    if 1 in steps:
-        print("\n\nParsing assembly graph...")
-        subprocess.check_output(["python3", "parse_fastg.py", args.graph, os.path.join(odir, "adjacency_list"),
+    cmds = get_step_dicts()
+    for step in steps:
+        cmd, messages = cmds[step]
+        script_dir = py_dir if cmd[0] == "python3" else pl_dir
+        for message in messages:
+            print(message)
+        subprocess.check_output(cmd, cwd=script_dir)
+
+def get_step_dicts() -> dict[int, tuple[list[str], list[str]]]:
+    """
+    Retrieve a dict with pipeline steps and messages
+    """
+    cmds = {
+        1 : (["python3", "parse_fastg.py", args.graph, os.path.join(odir, "adjacency_list"),
                          os.path.join(odir, "contig_rename_map"), os.path.join(odir, "renamed_final_contigs.fa"),
-                         os.path.join(odir, "adjacency_matrix")], cwd=py_dir)
-
-    if 2 in steps:
-        print("\n\nParsing R1...")
-        subprocess.check_output(["perl", "parse_bwa_sam.pl", args.r1, os.path.join(odir, "R1table"),
-                         os.path.join(odir, ".R1table_stats")], cwd=pl_dir)
-        print("Parsing R2...")
-        subprocess.check_output(["perl", "parse_bwa_sam.pl", args.r2, os.path.join(odir, "R2table"),
-                         os.path.join(odir, ".R2table_stats")], cwd=pl_dir)
-    if 3 in steps:
-        print("\n\nFiltering reads: min quality", args.min_quality, "; min match length", args.min_match_len, "; max edit distance", args.max_edit_distance)
-        print("Filtering R1...")
-        subprocess.check_output(["perl", "filter_map.pl", os.path.join(odir, "R1table"), str(args.min_quality),
-                         str(args.min_match_len), str(args.max_edit_distance), os.path.join(odir, "filter_R1table"),
-                         os.path.join(odir, ".filter_R1table_stats")], cwd=pl_dir)
-        print("Filtering R2...")
-        subprocess.check_output(["perl", "filter_map.pl", os.path.join(odir, "R2table"), str(args.min_quality),
-                         str(args.min_match_len), str(args.max_edit_distance), os.path.join(odir, "filter_R2table"),
-                         os.path.join(odir, ".filter_R2table_stats")], cwd=pl_dir)
-
-    print("\n\nBUILDING GRAPH...")
-
-    if 4 in steps:
-        print("\n\nCalculating contig (internal edge) coverages...")
-        subprocess.check_output(["python3", "contig_cov_core.py", os.path.join(odir, "renamed_final_contigs.fa"),
+                         os.path.join(odir, "adjacency_matrix")], ["\n\nParsing assembly graph..."]),
+        2 : (["perl", "parse_bwa_sam.pl", args.r1, os.path.join(odir, "R1table"),
+                         os.path.join(odir, ".R1table_stats")], ["\n\nParsing R1..."]),
+        3 : (["perl", "parse_bwa_sam.pl", args.r2, os.path.join(odir, "R2table"),
+                         os.path.join(odir, ".R2table_stats")], ["\n\nParsing R2..."]),
+        4 : (["python3", "contig_cov_core.py", os.path.join(odir, "renamed_final_contigs.fa"),
                          os.path.join(odir, "filter_R1table"), os.path.join(odir, "filter_R2table"),
-                         str(args.read_len), os.path.join(odir, "contig_table")], cwd=py_dir)
-
-    if 5 in steps:
-        print("\n\nPairing reads and calculating read statistics...")
-        subprocess.check_output(["python3", "pair_reads.py", os.path.join(odir, "filter_R1table"),
+                         str(args.read_len), os.path.join(odir, "contig_table")], ["\n\nBUILDING GRAPH...", "\n\nCalculating contig (internal edge) coverages..."]),
+        5 : (["python3", "pair_reads.py", os.path.join(odir, "filter_R1table"),
                          os.path.join(odir, "filter_R2table"), os.path.join(odir, "filter_singleton_table"),
-                         os.path.join(odir, "filter_paired_table")], cwd=py_dir)
-        subprocess.check_output(["python", "read_stats_core.py", os.path.join(odir, "filter_paired_table"),
-                         str(args.k), str(args.read_len), os.path.join(odir, "read_stats.txt")], cwd=py_dir)
-
-    if 6 in steps:
-        print("\n\nFinding all external edges...")
-        subprocess.check_output(["python3", "find_new_variable_edges.py", os.path.join(odir, "filter_paired_table"),
+                         os.path.join(odir, "filter_paired_table")], ["\n\nPairing reads..."]),
+        6 : (["python", "read_stats_core.py", os.path.join(odir, "filter_paired_table"),
+                         str(args.k), str(args.read_len), os.path.join(odir, "read_stats.txt")], ["Calculating read statistics..."]),
+        7 : (["python3", "find_new_variable_edges.py", os.path.join(odir, "filter_paired_table"),
                          os.path.join(odir, "adjacency_list"), os.path.join(odir, "contig_table"),
-                         os.path.join(odir, "read_stats.txt"), os.path.join(odir, "edge_summary")], cwd=py_dir)
-
-    print("\n\nGRAPH BUILT!")
-
-    if 7 in steps:
-        print("\n\nFinding cycles in the graph...")
-        subprocess.check_output(["python3", "dominant_cycles.py", os.path.join(odir, "edge_summary"),
+                         os.path.join(odir, "read_stats.txt"), os.path.join(odir, "edge_summary")], ["\n\nFinding all external edges..."]),
+        8 : (["python3", "dominant_cycles.py", os.path.join(odir, "edge_summary"),
                          os.path.join(odir, "read_stats.txt"), str(args.alpha),
-                         os.path.join(odir, "cycle_contig_table")], cwd=py_dir)
-
-    if 8 in steps:
-        print("\n\nCalculating cycle coverage statistics in the cycle space...")
-        subprocess.check_output(["python3", "cycle_coverages_2.py", args.sample, os.path.join(odir, "cycle_contig_table"),
+                         os.path.join(odir, "cycle_contig_table")], ["\n\nFinding cycles in the graph..."]),
+        9 : (["python3", "cycle_coverages_2.py", args.sample, os.path.join(odir, "cycle_contig_table"),
                          os.path.join(odir, "filter_paired_table"), os.path.join(odir, "filter_singleton_table"),
                          os.path.join(odir, "contig_table"), os.path.join(odir, "read_stats.txt"),
                          os.path.join(odir, "cycle_covs_long"), os.path.join(odir, "cycle_cov_summary"),
-                         os.path.join(odir, "out_contigs")], cwd=py_dir)
-
-    if 9 in steps:
-        print("\n\nCreating cycle fastas...")
-        subprocess.check_output(["python3", "cycle_fastas.py", os.path.join(odir, "cycle_contig_table"),
+                         os.path.join(odir, "out_contigs")], ["\n\nCalculating cycle coverage statistics in the cycle space..."]),
+        10 : (["python3", "cycle_fastas.py", os.path.join(odir, "cycle_contig_table"),
                          os.path.join(odir, "renamed_final_contigs.fa"), os.path.join(odir, "read_stats.txt"),
-                         os.path.join(odir, "cycles.fasta")], cwd=py_dir)
-
-    if 10 in steps:
-        if not os.path.exists(os.path.join(odir, "dominant_cycles")):
-            os.mkdir(os.path.join(odir, "dominant_cycles"))
-        print("\n\nIdentifying dominant cycles...\n")
-        subprocess.check_output(["python3", "extract_p.py", os.path.join(odir, "cycle_cov_summary"),
+                         os.path.join(odir, "cycles.fasta")], ["\n\nCreating cycle fastas..."]),
+        11 : (["python3", "extract_p.py", os.path.join(odir, "cycle_cov_summary"),
                          os.path.join(odir, "cycles.fasta"), os.path.join(odir, "cycle_contig_table"),
-                         str(args.maxpval), "0", "0", str(args.minscore), os.path.join(odir, "cycle_stats"), os.path.join(odir, "dominant_cycles", "cycle_stats"),
-                         os.path.join(odir, "dominant_cycles", "cycles.fasta"), os.path.join(odir, "dominant_cycles", "cycle_contig_table")],
-                         cwd=py_dir)
+                         str(args.maxpval), "0", "0", str(args.minscore), os.path.join(odir, "cycle_stats"), os.path.join(odir, "dominant_cycles_pre", "cycle_stats"),
+                         os.path.join(odir, "dominant_cycles_pre", "cycles.fasta"), os.path.join(odir, "dominant_cycles_pre", "cycle_contig_table")], ["\n\nIdentifying cycles with low out reads...\n"]),
+        12 : (["python3", "remove_high_singletons.py", os.path.join(odir, "cycle_covs_long"),
+                         os.path.join(odir, "cycle_stats"), os.path.join(odir, "cycle_contig_table"),
+                         os.path.join(odir, "cycle_cov_summary"), os.path.join(odir, "cycles.fasta"), str(args.minscore), str(args.maxpval),
+                         os.path.join(odir, "dominant_cycles")], ["\n\nIdentifying dominant cycles...\n"]),
+        13 : (["python3", "clean.py", os.path.join(odir)], [len(open(os.path.join(odir, "dominant_cycles", "dominant_cycle_stats")).readlines()) -1, "dominant cycles found!"])
+    }
 
-        print(len(open(os.path.join(odir, "dominant_cycles", "cycle_stats")).readlines()) -1, "dominant cycles found!")
+    return cmds
 
-    if 11 in steps:
-        subprocess.check_output(["python3", "clean.py", os.path.join(odir)],
-                                cwd=py_dir)
-
-
-def parse_steps(steps):
+def parse_steps(steps: str):
     if "-" in steps: # sequential list of steps
         start_step = int(steps.split("-")[0])
         stop_step = int(steps.split("-")[1])
