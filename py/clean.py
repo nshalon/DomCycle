@@ -17,7 +17,7 @@ if not os.path.exists(raw_dir): os.mkdir(raw_dir)
 files = [f for f in os.listdir(args.idir) if os.path.isfile(os.path.join(args.idir, f))]
 for f in files: shutil.move(os.path.join(args.idir, f), raw_dir)
 shutil.copy(os.path.join(args.idir, "dominant_cycles", "cycle_contig_table"), args.idir)
-shutil.copy(os.path.join(args.idir, "dominant_cycles", "cycle_stats"), args.idir)
+shutil.copy(os.path.join(args.idir, "dominant_cycles", "dominant_cycle_stats"), args.idir)
 shutil.copy(os.path.join(args.idir, "dominant_cycles", "cycles.fasta"), args.idir)
 shutil.copy(os.path.join(raw_dir, "cycle_covs_long"), args.idir)
 shutil.move(os.path.join(args.idir, "dominant_cycles"), raw_dir)

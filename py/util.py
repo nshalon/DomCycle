@@ -86,7 +86,7 @@ def get_parent_to_child(adj_list_file):
                 parent_to_child.setdefault(parent, []).append(child)
                 # contig_edge = tuple(sorted([parent[:-2],child[:-2]]))
                 connected[(parent,child)] = True
-    return parent_to_child,connected
+    return parent_to_child, connected
 
 def edge_summary_parse(edge_summary_file):
     parent_to_child = {}
@@ -133,11 +133,11 @@ def get_contig_stats(file):
         next(contig_table)
         for line in contig_table:
             line = line.rstrip().split("\t")
-            contig,cov,length = line
+            contig, cov, length = line
             contig_to_cov[contig] = float(cov)
             contig_to_length[contig] = int(length)
 
-    return (contig_to_cov,contig_to_length)
+    return contig_to_cov,contig_to_length
 
 def get_edge_stats(file):
     edge_to_weight = {}
@@ -151,7 +151,7 @@ def get_edge_stats(file):
         for edge in edge_summary:
             edgeStats = edge.rstrip().replace(" ", "\t").split("\t")
             parent, child, coverage, length, weight = edgeStats[:5]
-            if parent[-2:] == "a+" and parent_to_children.get(parent) == None:
+            if parent[-2:] == "a+" and parent_to_children.get(parent) is None:
                 start_nodes.append(parent)
             edge = (parent, child)
             edge_to_weight[edge] = float(weight)
@@ -182,11 +182,15 @@ def get_edge_structures(file):
             parent_to_children.setdefault(parent,[]).append(child)
             child_to_parents.setdefault(child, []).append(parent)
             edge_to_graph_type[edge] = str(graph_edge)
-            if edge_to_length.get(edge) == None:
+            if edge_to_length.get(edge) is None:
                 edge_to_length[edge] = int(line[header["length"]])
-            if parent[-1:] == "-":
+            if parent[-1] == "-":
                 start_edges.append(edge)
     return parent_to_children, child_to_parents, edge_to_cov, start_edges, edge_to_graph_type, edge_to_length
+
+
+def nonsupport_weight(alpha, out_weight, in_weight):
+    return alpha * ((out_weight + in_weight) / 2)
 
 
 def reverse_complement(seq):
@@ -285,6 +289,7 @@ def get_hypers(hyper_file):
 # Paired read table functions      #
 ####################################
 
+
 def read_not_in_overlap(contig_len,read_start,read_stop, k, edit_distance=0, buffer=3):
     k_buffer = k + buffer
     if (read_start > k_buffer or read_stop > k_buffer) and (read_start < contig_len - k_buffer or read_stop < contig_len - k_buffer):
@@ -293,7 +298,8 @@ def read_not_in_overlap(contig_len,read_start,read_stop, k, edit_distance=0, buf
                 return True
             else:
                 return False
-        else: return True
+        else:
+            return True
     else:
         return False
 
@@ -337,6 +343,7 @@ def get_insert(file):
             if line[head['contig1']] == line[head['contig2']]:
                 sorted_starts_coords = sorted([(int(line[head['back_coord1']]), int(line[head['strand1']])), (int(line[head['back_coord2']]),int(line[head['strand2']]))] , key=lambda start_strand: start_strand[0] )
                 if sorted_starts_coords[0][1] == 1:
+                    print(sorted_starts_coords[1][0] - sorted_starts_coords[0][0])
                     inserts.append(sorted_starts_coords[1][0] - sorted_starts_coords[0][0])
                     count += 1
             if count > 10000:
@@ -384,7 +391,7 @@ def get_renamed_contigs(contig_table, cycle_summary, ofile):
     ofile.write(write_line("original","cycle_name"))
     for contig in contigs:
         rename = contig_to_name.get(contig)
-        if rename == None:
+        if rename is None:
             ofile.write(write_line(contig,contig))
         else:
             ofile.write(write_line(contig,rename))
@@ -419,8 +426,6 @@ def get_cycle_specs(cyc_table):
 returns: -tuple of cycles that read1, read2 belong to (None if a read doesn't belong to a cycle)
 """
 def contig_to_cycs(contig1, contig2, cycle_members, strand1=None, strand2=None):
-    orientation_to_strand = {("+", 1) : 1, ("+", -1) : -1, ("-", 1) : -1, ("-", -1) : 1}
-    same_strand_cycle_stats = []
     cycles_to_cycle_stats = {}
     if contig2 != "singleton":
         cycles1 = cycle_members.get(contig1,[ tuple( [None]*5 ) ]) # positions of contig1 in any cycles
@@ -432,17 +437,8 @@ def contig_to_cycs(contig1, contig2, cycle_members, strand1=None, strand2=None):
             for cycle1, cumsum1, c1_len, ori1, cyc1_len in cycles1: # the loops exist in the case of a repeat cycle contig
                 for cycle2, cumsum2, c2_len, ori2,cyc2_len in cycles2:
                     cycle_stats = tuple([(cycle1,cycle2) , (cumsum1, cumsum2), (c1_len, c2_len), (ori1, ori2), (cyc1_len,cyc2_len)])
-                    # if ori1 != None and ori2 != None:
-                    #     if orientation_to_strand[(ori1, strand1)] == orientation_to_strand[(ori2, strand2)]:
-                    #         same_strand_cycle_stats.append(cycle_stats)
                     cycles_to_cycle_stats.setdefault((cycle1, cycle2), []).append(cycle_stats)
                     read_cycles.append(cycle_stats)
-            # for cycle_stat in same_strand_cycle_stats: # take out flipped repeats (a repeat that is one direction then the other direction)
-            #     ((cycle1, cycle2), (cumsum1, cumsum2), (c1_len, c2_len), (ori1, ori2), (cyc1_len, cyc2_len)) = cycle_stat
-            #     if cycle1 == cycle2:
-            #         better_cycles = [1 for ((cycle1, cycle2), (cumsum1, cumsum2), (c1_len, c2_len), (ori1, ori2), (cyc1_len, cyc2_len)) in cycles_to_cycle_stats[(cycle1, cycle2)] if orientation_to_strand[(ori1, strand1)] != orientation_to_strand[(ori2, strand2)]]
-            #         if len(better_cycles) == 1:
-            #             read_cycles.remove(cycle_stat)
             return read_cycles
     else:
         return cycle_members[contig1]
@@ -452,7 +448,7 @@ def contig_to_cycs(contig1, contig2, cycle_members, strand1=None, strand2=None):
 returns: -the cycle relative coordinates of a read that maps to a cycle in a paired read that supports a cycle 
 """
 def get_cycle_coords(cycle_contig_start, contig_length, contig_orientation, read_start, read_stop):
-    if cycle_contig_start == None: return None # if read doesn't map to a cycle
+    if cycle_contig_start is None: return None # if read doesn't map to a cycle
     if contig_orientation == "+": # if the cycle and contig are pointing the same way
         start = cycle_contig_start + read_start
         stop = cycle_contig_start + read_stop
@@ -550,7 +546,7 @@ def get_cycle_specs_tp(cyc_table):
     return cycle_junction_coords, [(cyc, int(length)) for cyc, length in np.unique(putative_cycles, axis = 0) ], cycle_to_contigs
 
 def cyc_read_usable(start, stop, cyc_coords, k):
-    if cyc_coords == None:
+    if cyc_coords is None:
         return True
     for coord in cyc_coords:
         if start > stop:
@@ -560,3 +556,25 @@ def cyc_read_usable(start, stop, cyc_coords, k):
             if stop < coord + k + 2 and start > coord - 2:
                 return False
     return True
+
+
+def get_contigs_to_compare(contig_table, cycle_contig_table, max_insert):
+    cycle_contigs = set()
+    with open(cycle_contig_table) as cycles:
+        header = get_header_dict(cycle_contig_table)
+        next(cycles)
+        for line in cycles:
+            line = split(line)
+            cycle_contigs.add(line[header["original_contig"]])
+    contig_to_length = {}
+    contig_to_cov = {}
+    min_contig_length = 2 * max_insert + 40
+    with open(contig_table) as contigs:
+        next(contigs)
+        for line in contigs:
+            line = line.rstrip().split("\t")
+            contig, cov, length = line
+            if int(length) > min_contig_length and contig not in cycle_contigs:
+                contig_to_cov[contig] = float(cov)
+                contig_to_length[contig] = int(length)
+    return contig_to_cov, contig_to_length

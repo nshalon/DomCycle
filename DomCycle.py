@@ -3,6 +3,7 @@ import os
 import subprocess
 import datetime
 import pathlib
+from typing import Dict, Tuple, List
 
 def run_steps() -> None:
     parser = argparse.ArgumentParser(description='Run DomCycle')
@@ -56,7 +57,7 @@ def run_steps() -> None:
             print(message)
         subprocess.check_output(cmd, cwd=script_dir)
 
-def get_step_dicts() -> dict[int, tuple[list[str], list[str]]]:
+def get_step_dicts() -> Dict[int, Tuple[List[str], List[str]]]:
     """
     Retrieve a dict with pipeline steps and messages
     """
@@ -103,7 +104,7 @@ def get_step_dicts() -> dict[int, tuple[list[str], list[str]]]:
 
     return cmds
 
-def parse_steps(steps: str):
+def parse_steps(steps: str) -> List[int]:
     if "-" in steps: # sequential list of steps
         start_step = int(steps.split("-")[0])
         stop_step = int(steps.split("-")[1])
