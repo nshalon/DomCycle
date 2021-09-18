@@ -9,6 +9,7 @@ import util
 
 parser = argparse.ArgumentParser(description='Get contig coverages from parsed bwa map file')
 parser.add_argument('ifn_fasta', metavar='<renamed contig fasta>', type=str, help='renamed contig fasta')
+parser.add_argument('ifn_name_map', metavar='<file connecting renamed contigs to original names>', type=str, help='contig name mapping file')
 parser.add_argument('ifn_bwa_R1_table', metavar='<bwa R1 parsed filtered table>', type=str, help='perl parsed bwa table for R1')
 parser.add_argument('ifn_bwa_R2_table', metavar='<bwa R2 parsed filtered table>', type=str, help='perl parsed bwa table for R2')
 parser.add_argument('read_length', metavar='avg read length', type=float, help='size of the reads')
@@ -21,6 +22,12 @@ bwa_head = util.get_header_dict(args.ifn_bwa_R1_table)
 
 contig_to_readc = {}
 contig_to_length = {}
+
+o2c = {} # original name to the renamed contig name
+with open(args.ifn_name_map) as f:
+    for line in f:
+        line = line.split("\t")
+        o2c[line[0]] = line[1]
 
 with open(args.ifn_fasta) as fasta:
     contig = length = None
@@ -39,7 +46,7 @@ with open(args.ifn_bwa_R1_table) as R1:
     next(R1)
     for line in R1:
         line = line.rstrip().split("\t")
-        contig = line[bwa_head['contig']]
+        contig = o2c[line[bwa_head['contig']]]
         contig_to_readc[contig] += 1
 
 print("Going over R2")
@@ -48,7 +55,7 @@ with open(args.ifn_bwa_R1_table) as R2:
     next(R2)
     for line in R2:
         line = line.rstrip().split("\t")
-        contig = line[bwa_head['contig']]
+        contig = o2c[line[bwa_head['contig']]]
         contig_to_readc[contig] += 1
 
 ofile = open(args.ofn_coverages,"w+")
