@@ -26,7 +26,7 @@ contig_to_length = {}
 o2c = {} # original name to the renamed contig name
 with open(args.ifn_name_map) as f:
     for line in f:
-        line = line.split("\t")
+        line = line.rstrip().split(" ")
         o2c[line[0]] = line[1]
 
 with open(args.ifn_fasta) as fasta:
