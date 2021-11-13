@@ -40,7 +40,7 @@ DomCycle requires the following inputs:
 
 It is important that the contig names in the supplied FASTG match the contig names in the FASTA files that were used to create the .sam files. Otherwise, there is no way to know which mapped read is attributable to which contig.
 
-To create the input .sam files, please map each read side separately to the FASTA e.g. `bwa mem contigs.fa R1.fastq > R1_map.sam`. Additionally, please ensure that the .sam files contain the full, untruncated contig names.
+To create the input .sam files, please map each read side separately to the FASTA e.g. `bwa mem contigs_filename.fa R1.fastq > R1_map.sam`. Additionally, please ensure that the .sam files contain the full, untruncated contig names.
 
 Configurable parameters:
 
