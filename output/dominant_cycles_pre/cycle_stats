@@ -1,3 +1,0 @@
-sample	cycle	bottleneck	median_support	avg_external	avg_inter	avg_intra-nonsupport	avg_singleton	pval	class	score	lower_bound_cov	length
-metagenome	CYC1	12.6	24.6	0.0	0.0	0.0	0.0	0.0	dominant	inf	12.6	24950.0
-metagenome	CYC2	24.0	49.8	0.0	0.0	0.0	0.0	0.0	dominant	inf	24.0	49950.0
