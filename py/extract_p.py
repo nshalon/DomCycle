@@ -15,6 +15,7 @@ parser.add_argument('max_pval', metavar='<max pval for global score>', type=floa
 parser.add_argument('min_length', metavar='<min cycle length to report>', type=int, help='minimum cycle length to report')
 parser.add_argument('min_lbc', metavar='<min AMC to report>', type=float, help='min AMC to report')
 parser.add_argument('paired_weird_mult', metavar='<multiple on intra-nonsupport coverage>', type=float, help='multiple on intra-nonsupport coverage')
+parser.add_argument('min_score', metavar='<minimum score to threshold on>', type=float, help='minimum score to threshold on')
 parser.add_argument('ofn_all_cycle_sum', metavar='<output cycle summary>', type=str, help='output cycle summary')
 parser.add_argument('ofn_dominant_cycle_sum', metavar='<output global score cycle table>', type=str, help='output global score cycle table')
 parser.add_argument('ofn_cycle_fasta', metavar='<output global score cycle fasta>', type=str, help='output global score cycle fasta')
@@ -54,10 +55,12 @@ with open(args.ifn_cycle_sum) as sum:
         cycle = line_s[header["cycle"]]
         avg_out = (float(line_s[header["non_support_out_reads"]]) + float(line_s[header["non_support_in_reads"]])) / 2
         avg_paired_weird = (float(line_s[header["paired_weird_out_reads"]]) + float(line_s[header["paired_weird_in_reads"]])) / 2
-        total_non_support = avg_out + avg_paired_weird
+        total_non_support = avg_out + args.paired_weird_mult * avg_paired_weird
         total_num_reads = float(line_s[header["paired_read_count"]])
         bottleneck_reads = float(line_s[header["bottleneck_reads"]])
-        pval = binom.cdf(total_non_support, total_num_reads, bottleneck_reads / total_num_reads) # score = 1
+        pval = binom.cdf(total_non_support, total_num_reads, bottleneck_reads / (args.min_score * total_num_reads)) # score = 1
+        if bottleneck_reads / (args.min_score * total_num_reads) > 1: # when score is changed
+            pval = 0
         non_support_cov = (float(line_s[header["non_support_out"]]) + float(line_s[header["non_support_in"]])) / 2
         avg_paired_weird_cov = (float(line_s[header["paired_weird_out"]]) + float(line_s[header["paired_weird_in"]])) / 2
         avg_singleton = (float(line_s[header["singletons_out"]]) + float(line_s[header["singletons_in"]])) / 2
@@ -67,10 +70,10 @@ with open(args.ifn_cycle_sum) as sum:
         low_coverage_est = bottleneck - non_support_cov
         if non_support_cov == 0 and bottleneck == 0:
             score = 0
-        elif non_support_cov == 0:
+        elif avg_external == 0:
             score = "inf"
         else:
-            score = round(bottleneck / non_support_cov, 3)
+            score = round(bottleneck / avg_external, 3)
         if pval < args.max_pval:
             cycle_class = "dominant"
             dominant = True
