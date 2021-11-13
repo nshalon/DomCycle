@@ -34,8 +34,8 @@ To install python dependencies:
 DomCycle requires the following inputs:
 
 - -g: assembly graph in FASTG format
-- -1: R1 mapped to the assembly in .sam format
-- -2: R2 mapped to the assembly in .sam format
+- -1: R1 mapped to the assembly FASTA in .sam format
+- -2: R2 mapped to the assembly FASTA in .sam format
 - -k: kmer used for assembly
 
 It is important that the contig names in the supplied FASTG match the contig names in the FASTA files that were used to create the .sam files. Otherwise, there is no way to know which mapped read is attributable to which contig.
@@ -75,7 +75,7 @@ Primary output files and associate fields:
     - cum_sum: the contig's start position in the cycle sequence space
     - orientation: denotes the relative orientation of the two contigs composing the cycle edge. (+) indicates that the two contigs are connected via the same reference strand and (-) indicates that they're connected via opposite reference strands
     - contig_index: indicates the contig is the ith contig in the cycle
-2. cycle_stats: displays the prominent cycle coverage statistics that follow the manuscript's methods.
+2. cycle_stats: displays the prominent cycle coverage statistics that follow the manuscript's methods. "dominant_cycle_stats" refers to only the calculated dominant cycles.
     - bottleneck: the minimum support x-coverage across all of the cycle bases
     - median_support: the cycle's median support x-coverage
     - avg external: the sum of avg_inter and avg_intra-nonsupport 
