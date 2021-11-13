@@ -1,3 +1,0 @@
-sample	cycle	avg_support_cov	mean_support	bottleneck	bottleneck_reads	bottleneck_pos	max_nonsupport	max_nonsupport_reads	non_support_out	non_support_out_reads	non_support_in	non_support_in_reads	paired_weird_out	paired_weird_out_reads	paired_weird_in	paired_weird_in_reads	singletons_out	singletons_in	cyc_length	paired_read_count
-metagenome	CYC1	24.6	24.6	12.6	21	1	0.0	0	0.0	0	0.0	0	0.0	0	0.0	0	0	0	24950	10427
-metagenome	CYC2	49.8	49.8	24.0	40	1	0.0	0	0.0	0	0.0	0	0.0	0	0.0	0	0	0	49950	10427
