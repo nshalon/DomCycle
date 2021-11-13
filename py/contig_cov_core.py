@@ -44,7 +44,7 @@ with open(args.ifn_bwa_R1_table) as R1:
 
 print("Going over R2")
 
-with open(args.ifn_bwa_R1_table) as R2:
+with open(args.ifn_bwa_R2_table) as R2:
     next(R2)
     for line in R2:
         line = line.rstrip().split("\t")

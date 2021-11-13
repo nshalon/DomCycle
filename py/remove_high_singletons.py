@@ -26,7 +26,6 @@ with open(args.ifn_cycle_cov_summary) as cycle_cov_summary:
     header = util.get_header_dict(args.ifn_cycle_cov_summary)
     cycle_cov_summary.readline()
     line = util.split(cycle_cov_summary.readline())
-    print(line)
     if len(line) > 1:
         total_num_reads = int(line[header["paired_read_count"]])
     else:
@@ -57,7 +56,9 @@ with open(args.ifn_long_table) as long_table:
         line = util.split(line)
         line_cycle = line[header["cycle"]]
         if line_cycle != cycle:
-            singleton_pval = binom.cdf(min_score_stats[1][1], total_num_reads, min_score_stats[1][0] / total_num_reads)
+            singleton_pval = binom.cdf(min_score_stats[1][1], total_num_reads, min_score_stats[1][0] / (total_num_reads * args.min_singleton_score))
+            if min_score_stats[1][0] == sys.maxsize or str(singleton_pval) == "nan": # no singletons on cycle
+                singleton_pval = 0
             cycle_to_singleton_stats[cycle] = (min_score_stats[0], singleton_pval)
             min_score = sys.maxsize
             cycle = line_cycle
@@ -70,7 +71,9 @@ with open(args.ifn_long_table) as long_table:
         if singleton_score < min_score:
             min_score = singleton_score
             min_score_stats = (singleton_score, (support, singleton_and_nonsupport))
-    singleton_pval = binom.cdf(min_score_stats[1][1], total_num_reads, min_score_stats[1][0] / total_num_reads)
+    singleton_pval = binom.cdf(min_score_stats[1][1], total_num_reads, min_score_stats[1][0] / (total_num_reads * args.min_singleton_score))
+    if min_score_stats[1][0] == sys.maxsize or str(singleton_pval) == "nan": # no singletons on cycle
+        singleton_pval = 0
     cycle_to_singleton_stats[cycle] = (min_score_stats[0], singleton_pval)
 
 odominant_stats = open(os.path.join(args.odir, "dominant_cycle_stats_singletons"), "w+")

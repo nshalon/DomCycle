@@ -1,0 +1,9 @@
+parent	child	coverage	length	weight	graph_edge
+NODE_1_length_25027_cov_20.5072_ID_1a+	NODE_1_length_25027_cov_20.5072_ID_1a-	14.54	200	13.75516	True
+NODE_1_length_25027_cov_20.5072_ID_1a-	NODE_1_length_25027_cov_20.5072_ID_1a+	25.02	25027	1000.27978	True
+NODE_1_length_25027_cov_20.5072_ID_1b+	NODE_1_length_25027_cov_20.5072_ID_1b-	14.54	200	13.75516	True
+NODE_1_length_25027_cov_20.5072_ID_1b-	NODE_1_length_25027_cov_20.5072_ID_1b+	25.02	25027	1000.27978	True
+NODE_2_length_50027_cov_41.0040_ID_3a+	NODE_2_length_50027_cov_41.0040_ID_3a-	27.696	200	7.22126	True
+NODE_2_length_50027_cov_41.0040_ID_3a-	NODE_2_length_50027_cov_41.0040_ID_3a+	50.02	50027	1000.13994	True
+NODE_2_length_50027_cov_41.0040_ID_3b+	NODE_2_length_50027_cov_41.0040_ID_3b-	27.696	200	7.22126	True
+NODE_2_length_50027_cov_41.0040_ID_3b-	NODE_2_length_50027_cov_41.0040_ID_3b+	50.02	50027	1000.13994	True
