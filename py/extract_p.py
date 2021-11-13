@@ -26,19 +26,6 @@ args = parser.parse_args()
 cyc_to_length, cyc_to_contig, contig_to_length = util.get_cyc_contig_stats(args.ifn_cycle_contigs)
 cycle_scores = util.get_cycle_scores(args.ifn_cycle_sum)
 
-collapsed_cycle = {}
-cycles = list(cyc_to_length.keys())
-for cyc1, cyc2 in itertools.combinations(cycles, 2):
-    contigs1 = set(cyc_to_contig[cyc1])
-    contigs2 = set(cyc_to_contig[cyc2])
-    intersect_contigs = list(set(contigs1) & set(contigs2))
-    union_contigs = list(set().union(contigs1, contigs2))
-    intersect_sum = sum([contig_to_length[contig] for contig in intersect_contigs])
-    union_sum = sum([contig_to_length[contig] for contig in union_contigs])
-    if intersect_sum / float(union_sum) >= 0.95:
-        sorted_cyc_scores = sorted([(cyc1, cycle_scores[cyc1]), (cyc2, cycle_scores[cyc2])], key=lambda tup: tup[1])
-        collapsed_cycle[sorted_cyc_scores[0][0]] = True
-
 ofn_sum = open(args.ofn_all_cycle_sum, "w+")
 ofn_sum.write(util.write_line("sample", "cycle", "bottleneck", "median_support", "avg_external", "avg_inter", "avg_intra-nonsupport", "avg_singleton", "pval", "class", "score", "lower_bound_cov", "length"))
 ofn_sum_dom = open(args.ofn_dominant_cycle_sum, "w+")
