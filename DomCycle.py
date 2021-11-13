@@ -19,6 +19,7 @@ def run_steps() -> None:
     parser.add_argument('--sample', metavar='SAMPLE NAME', type=str, help='your custom sample name', default="metagenome")
     parser.add_argument('--min_quality', metavar='MIN QUALITY THRESHOLD', type=int, help='min map quality threshold', default=0)
     parser.add_argument('--min_match_len', metavar='MIN MATCH READ LENGTH', type=int, help='minimum match read length for filtering mapped reads', default=50)
+    parser.add_argument('--min_length', metavar='MIN CYCLE LENGTH', type=str, help='minimum cycle length', default="1000")
     parser.add_argument('--max_edit_distance', metavar='MAX MISMATCH', type=int, help='maximum mismatches tolerated for filtering mapped reads', default=1)
     parser.add_argument('--steps', metavar='STEPS TO RUN', type=str, help='maximum mismatches tolerated for filtering mapped reads', default="1-15")
 
@@ -57,7 +58,7 @@ def run_steps() -> None:
             print(message)
         subprocess.check_output(cmd, cwd=script_dir)
     
-    print(len(open(os.path.join(odir, "dominant_cycle_stats_singletons")).readlines()) -1, "dominant cycles found!")
+    print(len(open(os.path.join(odir, "dominant_cycle_stats")).readlines()) -1, "dominant cycles found!")
 
 def get_step_dicts(args: argparse.ArgumentParser) -> Dict[int, Tuple[List[str], List[str]]]:
     """
@@ -101,7 +102,7 @@ def get_step_dicts(args: argparse.ArgumentParser) -> Dict[int, Tuple[List[str], 
                          os.path.join(odir, "cycles.fasta")], ["\n\nCreating cycle fastas..."]),
         13 : (["python3", "extract_p.py", os.path.join(odir, "cycle_cov_summary"),
                          os.path.join(odir, "cycles.fasta"), os.path.join(odir, "cycle_contig_table"),
-                         str(args.maxpval), "0", "0", str(args.minscore), os.path.join(odir, "cycle_stats"), os.path.join(odir, "dominant_cycles_pre", "cycle_stats"),
+                         str(args.maxpval), args.min_length, "0", "0", str(args.minscore), os.path.join(odir, "cycle_stats"), os.path.join(odir, "dominant_cycles_pre", "cycle_stats"),
                          os.path.join(odir, "dominant_cycles_pre", "cycles.fasta"), os.path.join(odir, "dominant_cycles_pre", "cycle_contig_table")], ["\n\nIdentifying cycles with low out reads...\n"]),
         14 : (["python3", "remove_high_singletons.py", os.path.join(odir, "cycle_covs_long"),
                          os.path.join(odir, "cycle_stats"), os.path.join(odir, "cycle_contig_table"),

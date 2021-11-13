@@ -32,7 +32,6 @@ adjacency_list = {}
 contig_to_sequence = {}
 
 with open(args.ifn_fastg) as fastg:
-    line_count = 0
     for line in fastg:
         if line[0] == ">":
             line = line.replace('>','')
@@ -48,10 +47,7 @@ with open(args.ifn_fastg) as fastg:
         elif contig_forw_seq:
             sequence = line.rstrip()
             contig_to_sequence[contig] = contig_to_sequence.get(contig, "") + sequence
-    
-        if line_count % 10000 == 0:
-            print("fastg line count:", line_count)
-        line_count += 1
+
     contig_to_length = {contig: len(seq) for contig, seq in contig_to_sequence.items()}
     #now convert hash table to list of tuples and sort by value
     #creates mapping of original fastg contig name to renamed order

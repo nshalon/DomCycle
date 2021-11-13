@@ -76,7 +76,7 @@ with open(args.ifn_long_table) as long_table:
         singleton_pval = 0
     cycle_to_singleton_stats[cycle] = (min_score_stats[0], singleton_pval)
 
-odominant_stats = open(os.path.join(args.odir, "dominant_cycle_stats_singletons"), "w+")
+odominant_stats = open(os.path.join(args.odir, "dominant_cycle_stats"), "w+")
 ostats = open(os.path.join(args.odir, "cycle_stats_singletons"), "w+")
 odominant_stats.write(util.write_line("sample", "cycle", "bottleneck", "median_support", "avg_external", "avg_inter", "avg_intra-nonsupport", "avg_singleton", "pval", "class", "score", "lower_bound_cov", "length", "MDC", "singleton_score","singleton_score_pval"))
 ostats.write(util.write_line("sample", "cycle", "bottleneck", "median_support", "avg_external", "avg_inter", "avg_intra-nonsupport", "avg_singleton", "pval", "class", "score", "lower_bound_cov", "length", "MDC", "singleton_score","singleton_score_pval"))

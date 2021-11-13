@@ -37,7 +37,6 @@ with open(args.ifn_cycle_sum) as sum:
     next(sum)
     for line in sum:
         line_s = util.split(line)
-        # cycle_length = line[header[""]]
         sample = line_s[header["sample"]]
         cycle = line_s[header["cycle"]]
         avg_out = (float(line_s[header["non_support_out_reads"]]) + float(line_s[header["non_support_in_reads"]])) / 2
@@ -54,14 +53,14 @@ with open(args.ifn_cycle_sum) as sum:
         bottleneck = float(line_s[header["bottleneck"]])
         median_support = float(line_s[header["avg_support_cov"]])
         avg_external = non_support_cov + args.paired_weird_mult * avg_paired_weird_cov
-        low_coverage_est = bottleneck - non_support_cov
+        low_coverage_est = bottleneck - avg_external
         if non_support_cov == 0 and bottleneck == 0:
             score = 0
         elif avg_external == 0:
             score = "inf"
         else:
             score = round(bottleneck / avg_external, 3)
-        if pval < args.max_pval:
+        if pval < args.max_pval and int(line_s[header["cyc_length"]]) >= args.min_length and low_coverage_est >= args.min_lbc:
             cycle_class = "dominant"
             dominant = True
         else:
