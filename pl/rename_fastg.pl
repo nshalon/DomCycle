@@ -159,6 +159,5 @@ sub rename_contig
     
     my $result = $map{$contig};
     $result .= "'" if ($is_reverse);
-    print $contig, " -> ", $result, "\n";
     return $result;
 }
