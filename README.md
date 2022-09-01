@@ -1,6 +1,6 @@
 # DomCycle: *de novo* identification of circular genetic elements in microbial and metagenomic samples
 
-DomCycle relies on coverage profiles of contigs in an assembly graph to confidently infer circular genetic elements in a sequenced sample. First, through an inputted FASTG file and .sam mapped read files, DomCycle constructs an assembly graph. In the assembly graph, nodes represent contig ends and edges represent either (1) connections between contig ends supported by read pairs or (2) a 3'-5' connection of a single contig. Each edge has a coverage value. Using the final assembly graph and contig-level coverage values, the dominant cycles algorithm (Algorithm 1 in the manuscript) is used to identify putative circular elements. Each element is further vetted on a nucleotide-level coverage profile for final cycle output.
+DomCycle relies on coverage profiles of contigs in an assembly graph to confidently infer circular genetic elements in a sequenced sample. First, through an inputted FASTG file and SAM mapped read files, DomCycle constructs an assembly graph. In the assembly graph, nodes represent contig ends and edges represent either (1) connections between contig ends supported by read pairs or (2) a 3'-5' connection of a single contig. Each edge has a coverage value. Using the final assembly graph and contig-level coverage values, the dominant cycles algorithm (Algorithm 1 in the manuscript) is used to identify putative circular elements. Each element is further vetted on a nucleotide-level coverage profile for final cycle output.
 
 To read more about DomCycle and its performance, please refer to our [preprint manuscript](https://www.biorxiv.org/content/10.1101/2021.05.25.445656v1). 
 
@@ -34,14 +34,14 @@ To install python dependencies:
 DomCycle requires the following inputs:
 
 - -g: assembly graph in FASTG format
-- -1: R1 mapped to the assembly FASTA in .sam format
-- -2: R2 mapped to the assembly FASTA in .sam format
+- -1: R1 mapped to the assembly FASTA in SAM format
+- -2: R2 mapped to the assembly FASTA in SAM format
 - -k: kmer used for assembly
 
-Contig names in the supplied FASTG must match the contig names in the SAM files. In case you are using MEGAHIT and the FASTG was generated using the megahit_toolkit (see [here](https://github.com/voutcn/megahit/wiki/Visualizing-MEGAHIT's-contig-graph) you may face naming issue, where there is a mismatch between the FASTG and SAM contig names. To fix the FASTG we supply a script that recieves as input a FASTA file and associated FASTG file and generates a corrected FASTG file, which can be used as input for DomCycle. Usage example:
+Contig names in the FASTG file must match the contig names in the SAM files. When using MEGAHIT an issue occurs if the FASTG are generated using the megahit_toolkit (see [here](https://github.com/voutcn/megahit/wiki/Visualizing-MEGAHIT's-contig-graph), and the reads were mapped to the FASTA file. In that case there is a contig name mismatch between the FASTG and SAM files. To fix the naming in the FASTG we supply a script (pl/rename_fastg.pl) that recieves as input a FASTA file and associated FASTG file, and produces a corrected FASTG file. This FASTG is suitable as input for DomCycle. Usage example:
 `$ perl pl/rename_fastg.pl k77.fasta original_k77.fastg k77.fastg`
 
-To create the input .sam files, please map each read side separately to the FASTA e.g. `bwa mem contigs_filename.fa R1.fastq > R1_map.sam`. Additionally, please ensure that the .sam files contain the full, untruncated contig names.
+To create the input SAM files, please map each read side separately to the FASTA e.g. `bwa mem contigs_filename.fa R1.fastq > R1_map.sam`. Additionally, please ensure that the SAM files contain the full, untruncated contig names.
 
 Configurable parameters:
 
