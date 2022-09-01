@@ -38,7 +38,7 @@ DomCycle requires the following inputs:
 - -2: R2 mapped to the assembly FASTA in SAM format
 - -k: kmer used for assembly
 
-Contig names in the FASTG file must match the contig names in the SAM files. When using MEGAHIT an issue occurs if the FASTG was generated using the megahit_toolkit (see [here](https://github.com/voutcn/megahit/wiki/Visualizing-MEGAHIT's-contig-graph), and the reads were mapped directly to the FASTA file. In that case there is a mismatch between conti names in the FASTG and SAM files. To fix the FASTG file we supply a script (pl/rename_fastg.pl) that recieves as input a FASTA file and associated FASTG file, and produces a corrected FASTG file. This FASTG is suitable as input for DomCycle. Usage example:
+Contig names in the FASTG file must match the contig names in the SAM files. When using MEGAHIT an issue occurs if the FASTG was generated using the megahit_toolkit (see [here](https://github.com/voutcn/megahit/wiki/Visualizing-MEGAHIT's-contig-graph)), and the reads were mapped directly to the FASTA file. In that case there is a mismatch between conti names in the FASTG and SAM files. To fix the FASTG file we supply a script (pl/rename_fastg.pl) that recieves as input a FASTA file and associated FASTG file, and produces a corrected FASTG file. This FASTG is suitable as input for DomCycle. Usage example:
 `$ perl pl/rename_fastg.pl k77.fasta original_k77.fastg k77.fastg`
 
 To create the input SAM files, please map each read side separately to the FASTA e.g. `bwa mem contigs_filename.fa R1.fastq > R1_map.sam`. Additionally, please ensure that the SAM files contain the full, untruncated contig names.
