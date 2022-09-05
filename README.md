@@ -76,7 +76,7 @@ Primary output files and associate fields:
     - cum_sum: the contig's start position in the cycle sequence space
     - orientation: denotes the relative orientation of the two contigs composing the cycle edge. (+) indicates that the two contigs are connected via the same reference strand and (-) indicates that they're connected via opposite reference strands
     - contig_index: indicates the contig is the ith contig in the cycle
-2. cycle_stats: displays the prominent cycle coverage statistics that follow the manuscript's methods. "dominant_cycle_stats" refers to only the calculated dominant cycles.
+2. dominant_cycle_stats: displays the prominent cycle coverage statistics that follow the manuscript's methods. "dominant_cycle_stats" refers to only the calculated dominant cycles.
     - bottleneck: the minimum support x-coverage across all of the cycle bases
     - median_support: the cycle's median support x-coverage
     - avg external: the sum of avg_inter and avg_intra-nonsupport 
@@ -85,7 +85,7 @@ Primary output files and associate fields:
     - avg_singleton: the total number of reads where one side maps to the cycle and the other side doesn't map anywhere after filtering out reads according to the mapping quality thresholds set
     - pval: given a null hypothesis of bottleneck = avg_external, the p-value associated with the associated statistics under D ~ binomial(n = # reads in sample, p = (avg_external) / (# reads in sample))
     - score: the bottleneck / avg_external
-3. cycle_cov_long: basepair resolution of coverage statistics for each cycle, where each row in the table represents a base in the cycle and the coverages follow the above definitions (but displayed separately for either cycle strand)
+3. cycle_covs_long: basepair resolution of coverage statistics for each cycle, where each row in the table represents a base in the cycle and the coverages follow the above definitions (but displayed separately for either cycle strand). You can remove this file to save disk space.
 4. cycles.fasta: a .fasta file of the dominant cycles after combining the contigs that compose each cycle
 
-Other files produced from mapping, graph building, cycle identification (dominant and otherwise) can be found in the "raw" subdirectory under the specified output directory.
+Other intermediate files produced during the run from mapping, graph building, cycle identification (dominant and otherwise) can be found in the folders "raw" and "dominant_cycles_pre" under the output directory.
