@@ -85,7 +85,7 @@ Primary output files and associate fields:
     - avg_singleton: the total number of reads where one side maps to the cycle and the other side doesn't map anywhere after filtering out reads according to the mapping quality thresholds set
     - pval: given a null hypothesis of bottleneck = avg_external, the p-value associated with the associated statistics under D ~ binomial(n = # reads in sample, p = (avg_external) / (# reads in sample))
     - score: the bottleneck / avg_external
-3. cycle_covs_long: basepair resolution of coverage statistics for each cycle, where each row in the table represents a base in the cycle and the coverages follow the above definitions (but displayed separately for either cycle strand). You can remove this file to save disk space.
-4. cycles.fasta: a .fasta file of the dominant cycles after combining the contigs that compose each cycle
+3. cycles.fasta: a .fasta file of the dominant cycles after combining the contigs that compose each cycle
+4. cycle_covs_long: basepair resolution of coverage statistics for each cycle, where each row in the table represents a base in the cycle and the coverages follow the above definitions (but displayed separately for either cycle strand). You can remove this file to save disk space.
 
 Other intermediate files produced during the run from mapping, graph building, cycle identification (dominant and otherwise) can be found in the folders "raw" and "dominant_cycles_pre" under the output directory.
