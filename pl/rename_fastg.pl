@@ -5,13 +5,14 @@ use warnings FATAL => qw(all);
 
 
 if ($#ARGV == -1) {
-        print "usage: $0  <input fastg> <input fasta> <output fastg>\n";
+        print "usage: $0  <input fastg> <input fasta> <output fastg> <output map file>\n";
         exit 1;
 }
 
 my $ifn_fastg = $ARGV[0];
 my $ifn_fasta = $ARGV[1];
-my $ofn = $ARGV[2];
+my $ofn_fastg = $ARGV[2];
+my $ofn_map = $ARGV[3];
 
 ####################################################################################
 # read fasta
@@ -93,14 +94,26 @@ if ($contig ne "" && !($contig =~ /'$/)) {
 close(IN);
 
 ####################################################################################
+# output map file
+####################################################################################
+
+print "writing map file: $ofn_map\n";
+open(OUT, ">", $ofn_map) || die "cannot create $ofn_map";
+print OUT "contig_fastg\tcontig_fasta\n";
+foreach my $contig (sort keys %map) {
+    print OUT $contig, "\t", $map{$contig}, "\n";
+}
+close(OUT);
+    
+####################################################################################
 # traverse fastg, second time
 ####################################################################################
 
 print "re-traversing fastg file: $ifn_fastg\n";
 open(IN, $ifn_fastg) || die "cannot open $ifn_fastg";
 
-print "writing fastg file: $ofn\n";
-open(OUT, ">", $ofn) || die "cannot create $ofn";
+print "writing fastg file: $ofn_fastg\n";
+open(OUT, ">", $ofn_fastg) || die "cannot create $ofn_fastg";
 
 while (my $line = <IN>) {
     chomp($line);
